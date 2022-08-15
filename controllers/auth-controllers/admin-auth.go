@@ -2,46 +2,40 @@ package AdminAuth
 
 import (
 	models "catalyst-token/models/admin-models"
-	utils "catalyst-token/utils"
+	// utils "catalyst-token/utils"
+	"errors"
+
 	"gorm.io/gorm"
 )
 
 type Repository interface {
-	RegisterToken(input *models.Admin) (*models.Admin, string)
+	RegisterToken(input *models.Admin) (*models.Admin, error)
 }
 
 type repository struct {
 	db *gorm.DB
 }
 
-func (r *repository) RegisterToken(input *models.Admin) (*models.Admin, string) {
+func RepositoryRegister(db *gorm.DB) *repository {
+	return &repository{db: db}
+}
 
-	errorCode := make(chan string, 1)
+func (r *repository) RegisterToken(input *models.Admin) (*models.Admin, error) {
+
 	var users models.Admin
 	db := r.db.Model(&users)
 
-	admin_info := db.Debug().Select("*").Where("email = ?", input.Email).Find(&users)
+	admin_info := db.Debug().Select("*").Where("email = ? AND password = ?", input.Email, input.Password).Find(&users)
 
 	if admin_info.RowsAffected < 1 {
-		errorCode <- "LOGIN_NOT_FOUND_404"
-		return &users, <-errorCode
+		return &users, errors.New("user not found")
 	}
 
-	if !users.Active {
-		errorCode <- "LOGIN_NOT_ACTIVE_403"
-		return &users, <-errorCode
-	}
+	// comparePassword := utils.ValidatePassword(&users.Password, input.Password)
 
-	comparePassword := utils.ValidatePassword(users.Password, input.Password)
+	// if comparePassword != nil {
+	// 	return &users, errors.New("user not found.")
+	// }
 
-	if comparePassword != nil {
-		errorCode <- "LOGIN_WRONG_PASSWORD_403"
-		return &users, <-errorCode
-	} else {
-		errorCode <- "nil"
-	}
-
-	return &users, <-errorCode
+	return &users, nil
 }
-
-

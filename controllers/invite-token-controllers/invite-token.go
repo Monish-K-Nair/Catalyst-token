@@ -20,6 +20,10 @@ type repository struct {
 	db *gorm.DB
 }
 
+func RepositoryRegister(db *gorm.DB) *repository {
+	return &repository{db: db}
+}
+
 func (r *repository) ValidateToken(input *models.InviteToken) bool {
 
 	var token models.InviteToken

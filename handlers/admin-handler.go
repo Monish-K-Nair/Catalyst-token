@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 
 	utils "catalyst-token/utils"
@@ -12,21 +11,27 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func RegisterNewToken(c *gin.Context) {
+type handler struct {
+	service adminService.Service
+}
 
-	var service adminService.Service
+func HandlerRegister(service adminService.Service) *handler {
+	return &handler{service: service}
+}
+
+func (h *handler) RegisterNewToken(c *gin.Context) {
+
 	body := adminService.InputLogin{}
-	fmt.Println(body)
 	err := c.BindJSON(&body)
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	res, new_err := service.RegisterNewToken(&body)
+	res, new_err := h.service.RegisterNewToken(&body)
 
-	if new_err != "" {
-		c.AbortWithError(http.StatusBadRequest, err)
+	if new_err != nil {
+		c.AbortWithError(http.StatusBadRequest, new_err)
 		return
 	}
 

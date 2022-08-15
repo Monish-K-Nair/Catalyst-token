@@ -9,7 +9,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func ValidateToken(c *gin.Context) {
+type inv_handler struct {
+	service inviteService.InviteService
+}
+
+func InviteRegister(srv inviteService.InviteService) *inv_handler {
+	return &inv_handler{service: srv}
+}
+
+func (h inv_handler) ValidateToken(c *gin.Context) {
 
 	var service inviteService.InviteService
 
@@ -32,7 +40,7 @@ func ValidateToken(c *gin.Context) {
 	})
 }
 
-func ListTokens(c *gin.Context) {
+func (h inv_handler) ListTokens(c *gin.Context) {
 	var service inviteService.InviteService
 	val, str := service.ListToken()
 	fmt.Println(val)
@@ -44,7 +52,7 @@ func ListTokens(c *gin.Context) {
 	})
 }
 
-func GenerateToken(c *gin.Context) {
+func (h inv_handler) GenerateToken(c *gin.Context) {
 	var service inviteService.InviteService
 	val, str := service.GenerateToken()
 	if str == false {
@@ -58,7 +66,7 @@ func GenerateToken(c *gin.Context) {
 	})
 }
 
-func RevokeToken(c *gin.Context) {
+func (h inv_handler) RevokeToken(c *gin.Context) {
 	var service inviteService.InviteService
 	token := model.InviteToken{}
 	err := c.BindJSON(&token)
@@ -77,7 +85,7 @@ func RevokeToken(c *gin.Context) {
 	})
 }
 
-func DeleteToken(c *gin.Context) {
+func (h inv_handler) DeleteToken(c *gin.Context) {
 	var service inviteService.InviteService
 
 	token := model.InviteToken{}

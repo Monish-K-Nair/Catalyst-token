@@ -2,10 +2,12 @@ package main
 
 import (
 	db "catalyst-token/config"
+	admin "catalyst-token/controllers/auth-controllers"
+	invite "catalyst-token/controllers/invite-token-controllers"
+	_ "catalyst-token/docs"
 	handler "catalyst-token/handlers"
 	auth "catalyst-token/middleware"
-
-	_ "catalyst-token/docs"
+	services "catalyst-token/services"
 
 	"github.com/gin-gonic/gin"
 
@@ -34,19 +36,23 @@ import (
 
 func main() {
 	router := gin.Default()
-	db.SetupConnection()
+	db := db.SetupConnection()
+
+	admin_handler := handler.HandlerRegister(services.ServiceRegister(admin.RepositoryRegister(db)))
+	validate_handler := handler.InviteRegister(services.InviteServiceRegister(invite.RepositoryRegister(db)))
+
 	v1 := router.Group("/api/v1")
 	{
 		token := v1.Group("/invite-token")
 		{
-			token.GET("", auth.AdminAuth(), handler.ListTokens)
-			token.POST("", auth.AdminAuth(), handler.GenerateToken)
-			token.PUT("", auth.AdminAuth(), handler.RevokeToken)
-			token.PATCH("", auth.AdminAuth(), handler.RevokeToken)
-			token.DELETE("", auth.AdminAuth(), handler.DeleteToken)
+			token.GET("", auth.AdminAuth(), validate_handler.ListTokens)
+			token.POST("", auth.AdminAuth(), validate_handler.GenerateToken)
+			token.PUT("", auth.AdminAuth(), validate_handler.RevokeToken)
+			token.PATCH("", auth.AdminAuth(), validate_handler.RevokeToken)
+			token.DELETE("", auth.AdminAuth(), validate_handler.DeleteToken)
+			router.POST("/validate", validate_handler.ValidateToken)
 		}
-		router.POST("/admin/login", handler.RegisterNewToken)
-		router.POST("/validate", handler.ValidateToken)
+		router.POST("/admin/login", admin_handler.RegisterNewToken)
 	}
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

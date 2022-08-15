@@ -11,14 +11,18 @@ type InputLogin struct {
 }
 
 type Service interface {
-	RegisterNewToken(input *InputLogin) (*model.Admin, string)
+	RegisterNewToken(input *InputLogin) (*model.Admin, error)
 }
 
 type service struct {
 	repo repository.Repository
 }
 
-func (s *service) RegisterNewToken(input *InputLogin) (*model.Admin, string) {
+func ServiceRegister(repository repository.Repository) *service {
+	return &service{repo: repository}
+}
+
+func (s *service) RegisterNewToken(input *InputLogin) (*model.Admin, error) {
 	user := model.Admin{
 		Email:    input.Email,
 		Password: input.Password,
