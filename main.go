@@ -10,7 +10,7 @@ import (
 	services "catalyst-token/services"
 	task "catalyst-token/tasks"
 	"time"
-
+	"github.com/aviddiviner/gin-limit"
 	"github.com/gin-gonic/gin"
 	"github.com/go-co-op/gocron"
 	swaggerFiles "github.com/swaggo/files"
@@ -34,8 +34,6 @@ import (
 // @host     localhost:8080
 // @BasePath /api/v1
 
-// @securityDefinitions.basic BasicAuth
-
 func main() {
 	router := gin.Default()
 	db := db.SetupConnection()
@@ -52,12 +50,12 @@ func main() {
 			token.PUT("", auth.AdminAuth(), tk_handler.RevokeToken)
 			token.PATCH("", auth.AdminAuth(), tk_handler.RevokeToken)
 			token.DELETE("", auth.AdminAuth(), tk_handler.DeleteToken)
-			router.POST("/validate", tk_handler.ValidateToken)
+			router.POST("/validate", limit.MaxAllowed(20), tk_handler.ValidateToken)
 		}
 		router.POST("/admin/login", admin_handler.RegisterNewToken)
 	}
 
-	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, ginSwagger.DefaultModelsExpandDepth(-1)))
 
 	cron := gocron.NewScheduler(time.UTC)
 

@@ -1,4 +1,27 @@
 basePath: /api/v1
+definitions:
+  handler.SwaggerAPIResponse:
+    properties:
+      data:
+        type: string
+      message:
+        type: string
+    type: object
+  invitetokenmodel.InviteToken:
+    properties:
+      active:
+        type: boolean
+      createdAt:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      token:
+        type: string
+      updatedAt:
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact:
@@ -12,8 +35,99 @@ info:
   termsOfService: http://swagger.io/terms/
   title: Swagger API for Catalyst Token
   version: "1.0"
-paths: {}
-securityDefinitions:
-  BasicAuth:
-    type: basic
+paths:
+  /api/v1/invite-token:
+    delete:
+      description: Responds with the Deletion of token
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.SwaggerAPIResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.SwaggerAPIResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.SwaggerAPIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.SwaggerAPIResponse'
+      summary: Create a new token
+      tags:
+      - tokens
+    get:
+      description: Responds with the list of all tokens as JSON.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.SwaggerAPIResponse'
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+      summary: Get tokens list
+      tags:
+      - tokens
+    post:
+      description: Responds with the Successful token inside dict
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/invitetokenmodel.InviteToken'
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.SwaggerAPIResponse'
+      summary: Create a new token
+      tags:
+      - tokens
+    put:
+      description: Responds with the status of revoking Token
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.SwaggerAPIResponse'
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+      summary: Create a new token
+      tags:
+      - tokens
+  /api/v1/invite-token/validate:
+    get:
+      description: Responds with the list of all tokens as JSON.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.SwaggerAPIResponse'
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+      summary: Get tokens list
+      tags:
+      - tokens
 swagger: "2.0"

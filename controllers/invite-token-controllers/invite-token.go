@@ -11,9 +11,9 @@ import (
 type Repository interface {
 	ValidateToken(input string) bool
 	RetrieveTokens() *[]models.InviteToken
-	GenerateToken() (string, bool)
-	UpdateToken(input string) bool
-	DeleteToken(input string) bool
+	GenerateToken() (string, string)
+	UpdateToken(input string) (bool, string)
+	DeleteToken(input string) (bool, string)
 }
 
 type inv_repository struct {
@@ -51,7 +51,7 @@ func (r *inv_repository) RetrieveTokens() *[]models.InviteToken {
 	return &tokens
 }
 
-func (r *inv_repository) GenerateToken() (string, bool) {
+func (r *inv_repository) GenerateToken() (string, string) {
 
 	var tokens models.InviteToken
 	db := r.db.Model(&tokens)
@@ -65,27 +65,33 @@ func (r *inv_repository) GenerateToken() (string, bool) {
 
 
 	if insert.Error != nil {
-		return "", false
+		return "", insert.Error.Error()
 	}
-	return tokens.Token, true
+	return tokens.Token, ""
 }
 
-func (r *inv_repository) UpdateToken(token string) bool {
+func (r *inv_repository) UpdateToken(token string) (bool, string) {
 
 	var tokens models.InviteToken
 	db := r.db.Model(&tokens)
 
 	revoke := db.Debug().Where("token = ?", token).Update("Active", false)
 
-	return revoke.Error == nil
+	if revoke.Error != nil{
+		return false, revoke.Error.Error()
+	}
+	return true, ""
 }
 
-func (r *inv_repository) DeleteToken(token string) bool {
+func (r *inv_repository) DeleteToken(token string) (bool, string) {
 
 	var tokens []models.InviteToken
 	db := r.db.Model(&tokens)
 
-	revoke := db.Debug().Where("token = ?", token).Delete(&tokens)
+	deletion := db.Debug().Where("token = ?", token).Delete(&tokens)
 
-	return revoke.Error == nil 
+	if deletion.Error != nil {
+		return false, deletion.Error.Error()
+	}
+	return true, ""
 }
