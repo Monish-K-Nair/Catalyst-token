@@ -9,36 +9,36 @@ import (
 )
 
 type Repository interface {
-	ValidateToken(input *models.InviteToken) bool
+	ValidateToken(input string) bool
 	RetrieveTokens() *[]models.InviteToken
 	GenerateToken() (string, bool)
-	UpdateToken(string) bool
-	DeleteToken(string) bool
+	UpdateToken(input string) bool
+	DeleteToken(input string) bool
 }
 
-type repository struct {
+type inv_repository struct {
 	db *gorm.DB
 }
 
-func RepositoryRegister(db *gorm.DB) *repository {
-	return &repository{db: db}
+func InvRepositoryRegister(db *gorm.DB) *inv_repository {
+	return &inv_repository{db: db}
 }
 
-func (r *repository) ValidateToken(input *models.InviteToken) bool {
+func (r *inv_repository) ValidateToken(input string) bool {
 
 	var token models.InviteToken
 
 	var exists bool
 	err := r.db.Model(&token).
 		Select("count(*) > 0").
-		Where("Active = ? AND token >= ?", true, input.Token).
+		Where("Active = ? AND token >= ?", true, input).
 		Find(&exists).
 		Error
 
 	return err == nil
 }
 
-func (r *repository) RetrieveTokens() *[]models.InviteToken {
+func (r *inv_repository) RetrieveTokens() *[]models.InviteToken {
 
 	var tokens []models.InviteToken
 	db := r.db.Model(&tokens)
@@ -51,7 +51,7 @@ func (r *repository) RetrieveTokens() *[]models.InviteToken {
 	return &tokens
 }
 
-func (r *repository) GenerateToken() (string, bool) {
+func (r *inv_repository) GenerateToken() (string, bool) {
 
 	var tokens models.InviteToken
 	db := r.db.Model(&tokens)
@@ -70,7 +70,7 @@ func (r *repository) GenerateToken() (string, bool) {
 	return tokens.Token, true
 }
 
-func (r *repository) UpdateToken(token string) bool {
+func (r *inv_repository) UpdateToken(token string) bool {
 
 	var tokens models.InviteToken
 	db := r.db.Model(&tokens)
@@ -80,7 +80,7 @@ func (r *repository) UpdateToken(token string) bool {
 	return revoke.Error == nil
 }
 
-func (r *repository) DeleteToken(token string) bool {
+func (r *inv_repository) DeleteToken(token string) bool {
 
 	var tokens []models.InviteToken
 	db := r.db.Model(&tokens)

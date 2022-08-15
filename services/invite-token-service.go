@@ -14,20 +14,15 @@ func InviteServiceRegister(repo repository.Repository) *invite_service {
 }
 
 type InviteService interface {
-	ValidateToken(input *model.InviteToken) bool
+	ValidateToken(input string) bool
 	ListToken() (*[]model.InviteToken, string)
 	GenerateToken() (string, bool)
-	RevokeToken(input *model.InviteToken) bool
-	DeleteToken(input *model.InviteToken) bool
+	RevokeToken(input string) bool
+	DeleteToken(input string) bool
 }
 
-func (s *invite_service) ValidateToken(input *model.InviteToken) bool {
-
-	token := model.InviteToken{
-		Token: input.Token,
-	}
-
-	val := s.repo.ValidateToken(&token)
+func (s *invite_service) ValidateToken(input string) bool {
+	val := s.repo.ValidateToken(input)
 	return val
 }
 
@@ -41,14 +36,14 @@ func (s *invite_service) GenerateToken() (string, bool) {
 	return val, status
 }
 
-func (s *invite_service) RevokeToken(input *model.InviteToken) bool {
+func (s *invite_service) RevokeToken(input string) bool {
 
-	val := s.repo.UpdateToken(input.Token)
+	val := s.repo.UpdateToken(input)
 	return val
 }
 
-func (s *invite_service) DeleteToken(input *model.InviteToken) bool {
+func (s *invite_service) DeleteToken(input string) bool {
 
-	val := s.repo.DeleteToken(input.Token)
+	val := s.repo.DeleteToken(input)
 	return val
 }

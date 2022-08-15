@@ -9,7 +9,7 @@ import (
 
 type InviteToken struct {
 	ID        string `gorm:"primaryKey;"`
-	Token     string `gorm:"type:varchar(255);unique"`
+	Token     string `gorm:"type:varchar(255);unique;required"`
 	Name      string `gorm:"type:varchar(255);"`
 	Active    bool   `gorm:"type:bool;default:false"`
 	CreatedAt time.Time

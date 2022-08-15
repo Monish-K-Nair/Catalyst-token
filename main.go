@@ -8,9 +8,11 @@ import (
 	handler "catalyst-token/handlers"
 	auth "catalyst-token/middleware"
 	services "catalyst-token/services"
+	task "catalyst-token/tasks"
+	"time"
 
 	"github.com/gin-gonic/gin"
-
+	"github.com/go-co-op/gocron"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
@@ -39,22 +41,28 @@ func main() {
 	db := db.SetupConnection()
 
 	admin_handler := handler.HandlerRegister(services.ServiceRegister(admin.RepositoryRegister(db)))
-	validate_handler := handler.InviteRegister(services.InviteServiceRegister(invite.RepositoryRegister(db)))
+	tk_handler := handler.InviteRegister(services.InviteServiceRegister(invite.InvRepositoryRegister(db)))
 
 	v1 := router.Group("/api/v1")
 	{
 		token := v1.Group("/invite-token")
 		{
-			token.GET("", auth.AdminAuth(), validate_handler.ListTokens)
-			token.POST("", auth.AdminAuth(), validate_handler.GenerateToken)
-			token.PUT("", auth.AdminAuth(), validate_handler.RevokeToken)
-			token.PATCH("", auth.AdminAuth(), validate_handler.RevokeToken)
-			token.DELETE("", auth.AdminAuth(), validate_handler.DeleteToken)
-			router.POST("/validate", validate_handler.ValidateToken)
+			token.GET("", auth.AdminAuth(), tk_handler.ListTokens)
+			token.POST("", auth.AdminAuth(), tk_handler.GenerateToken)
+			token.PUT("", auth.AdminAuth(), tk_handler.RevokeToken)
+			token.PATCH("", auth.AdminAuth(), tk_handler.RevokeToken)
+			token.DELETE("", auth.AdminAuth(), tk_handler.DeleteToken)
+			router.POST("/validate", tk_handler.ValidateToken)
 		}
 		router.POST("/admin/login", admin_handler.RegisterNewToken)
 	}
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+	cron := gocron.NewScheduler(time.UTC)
+
+	cron.Every(1).Seconds().Do(task.InvalidateToken, db)
+	cron.StartAsync()
+
 	router.Run()
 }
