@@ -31,7 +31,7 @@ func CreateJWT(Data map[string]interface{}, secret string) (string, error) {
 	}
 
 	to := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	accessToken, err := to.SignedString([]byte(GodotEnv(secret)))
+	accessToken, err := to.SignedString([]byte("12345678"))
 
 	if err != nil {
 		logrus.Error(err.Error())
@@ -44,7 +44,7 @@ func CreateJWT(Data map[string]interface{}, secret string) (string, error) {
 func VerifyJWTToken(c *gin.Context, secret string) (*jwt.Token, error) {
 	val := strings.Trim(strings.SplitAfter(c.GetHeader("Authorization"), "Bearer")[1], " ")
 	token, err := jwt.Parse(val, func(token *jwt.Token) (interface{}, error) {
-		return []byte(GodotEnv(secret)), nil
+		return []byte("12345678"), nil
 	})
 
 	if err != nil {

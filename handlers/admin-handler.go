@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 
 	utils "catalyst-token/utils"
@@ -15,8 +16,9 @@ func RegisterNewToken(c *gin.Context) {
 
 	var service adminService.Service
 	body := adminService.InputLogin{}
-	err := c.BindJSON(&body);
-	if  err != nil {
+	fmt.Println(body)
+	err := c.BindJSON(&body)
+	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
@@ -30,7 +32,7 @@ func RegisterNewToken(c *gin.Context) {
 
 	data := map[string]interface{}{"id": res.ID, "email": res.Email}
 
-	token, tk_error := utils.CreateJWT(data, utils.GodotEnv("JWT_SECRET"))
+	token, tk_error := utils.CreateJWT(data, "12345678")
 
 	if tk_error != nil {
 		defer logrus.Error(tk_error.Error())

@@ -1,6 +1,7 @@
 package main
 
 import (
+	db "catalyst-token/config"
 	handler "catalyst-token/handlers"
 	auth "catalyst-token/middleware"
 
@@ -33,6 +34,7 @@ import (
 
 func main() {
 	router := gin.Default()
+	db.SetupConnection()
 	v1 := router.Group("/api/v1")
 	{
 		token := v1.Group("/invite-token")

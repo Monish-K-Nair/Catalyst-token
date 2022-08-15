@@ -2,7 +2,7 @@ package services
 
 import (
 	repository "catalyst-token/controllers/auth-controllers"
-	model "catalyst-token/models"
+	model "catalyst-token/models/admin-models"
 )
 
 type InputLogin struct {
@@ -19,12 +19,10 @@ type service struct {
 }
 
 func (s *service) RegisterNewToken(input *InputLogin) (*model.Admin, string) {
-
 	user := model.Admin{
 		Email:    input.Email,
 		Password: input.Password,
 	}
-
 	res, err := s.repo.RegisterToken(&user)
 	return res, err
 }

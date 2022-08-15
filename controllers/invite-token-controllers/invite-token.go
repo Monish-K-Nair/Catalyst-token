@@ -1,7 +1,7 @@
 package InviteTokenController
 
 import (
-	models "catalyst-token/models"
+	models "catalyst-token/models/invite-token-models"
 	"strings"
 
 	"github.com/google/uuid"

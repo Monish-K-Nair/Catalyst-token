@@ -2,7 +2,7 @@ package services
 
 import (
 	repository "catalyst-token/controllers/invite-token-controllers"
-	model "catalyst-token/models"
+	model "catalyst-token/models/invite-token-models"
 )
 
 type invite_service struct {

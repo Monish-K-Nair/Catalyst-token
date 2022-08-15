@@ -1,7 +1,7 @@
 package AdminAuth
 
 import (
-	models "catalyst-token/models"
+	models "catalyst-token/models/admin-models"
 	utils "catalyst-token/utils"
 	"gorm.io/gorm"
 )

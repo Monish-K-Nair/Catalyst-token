@@ -1,7 +1,7 @@
 package handler
 
 import (
-	model "catalyst-token/models"
+	model "catalyst-token/models/invite-token-models"
 	inviteService "catalyst-token/services"
 	"fmt"
 	"net/http"

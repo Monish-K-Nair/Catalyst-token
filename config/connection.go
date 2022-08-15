@@ -3,24 +3,24 @@ package config
 import (
 	"os"
 
-	models "catalyst-token/models"
-	utils "catalyst-token/utils"
+	. "catalyst-token/models/admin-models"
+	. "catalyst-token/models/invite-token-models"
 
 	"github.com/sirupsen/logrus"
-	"gorm.io/driver/mysql"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-func Connection() *gorm.DB {
-	databaseURI := make(chan string, 1)
+func SetupConnection() *gorm.DB {
+	// databaseURI := make(chan string, 1)
 
-	if os.Getenv("GO_ENV") != "production" {
-		databaseURI <- utils.GodotEnv("DATABASE_URI_DEV")
-	} else {
-		databaseURI <- os.Getenv("DATABASE_URI_PROD")
-	}
+	// if os.Getenv("GO_ENV") != "production" {
+	// 	databaseURI <- utils.GodotEnv("DEV_URI")
+	// } else {
+	// 	databaseURI <- os.Getenv("PROD_URI")
+	// }
 
-	db, err := gorm.Open(mysql.Open(<-databaseURI), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open("postgres://postgres@localhost:5432/development"), &gorm.Config{})
 
 	if err != nil {
 		defer logrus.Info("Connection to Database Failed")
@@ -32,8 +32,8 @@ func Connection() *gorm.DB {
 	}
 
 	err = db.AutoMigrate(
-		&models.Admin{},
-		&models.InviteToken{},
+		Admin{},
+		InviteToken{},
 	)
 
 	if err != nil {
