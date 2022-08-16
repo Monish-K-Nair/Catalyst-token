@@ -3,6 +3,7 @@ Instructions to run
 Install docker 
 
 docker-compose build
+
 docker-compose up 
 
 FOR JWT TOKEN 
