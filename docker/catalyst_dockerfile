@@ -1,0 +1,12 @@
+FROM golang:alpine as build-stage
+MAINTAINER Monish K Nair
+ENV GIN_MODE=release
+WORKDIR /go/src/catalyst-token
+COPY . .
+RUN go build -o server server.go
+FROM alpine:latest
+RUN apk --no-cache add ca-certificates libc6-compat
+WORKDIR /catalyst-token/
+COPY --from=build-stage /go/src/catalyst-token/server .
+EXPOSE 8080
+CMD ["./server"]

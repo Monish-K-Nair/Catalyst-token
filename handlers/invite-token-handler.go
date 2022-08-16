@@ -146,8 +146,6 @@ func (h inv_handler) RevokeToken(c *gin.Context) {
 // @Failure      500  {object} SwaggerAPIResponse
 // @Router       /api/v1/invite-token [DELETE]
 func (h inv_handler) DeleteToken(c *gin.Context) {
-	var service inviteService.InviteService
-
 	token := TokenForm{}
 	err := c.ShouldBindJSON(&token)
 	if err != nil {
@@ -155,7 +153,7 @@ func (h inv_handler) DeleteToken(c *gin.Context) {
 		return
 	}
 
-	val,error_message := service.DeleteToken(token.Token)
+	val,error_message := h.service.DeleteToken(token.Token)
 	if val {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Deleted Token",

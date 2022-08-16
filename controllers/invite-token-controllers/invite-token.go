@@ -28,14 +28,10 @@ func (r *inv_repository) ValidateToken(input string) bool {
 
 	var token models.InviteToken
 
-	var exists bool
-	err := r.db.Model(&token).
-		Select("count(*) > 0").
-		Where("Active = ? AND token >= ?", true, input).
-		Find(&exists).
-		Error
-
-	return err == nil
+	err := r.db.Model(&token).Debug().
+		Where("Active = ? AND Token = ?", true, input).
+		Find(&token)
+	return err.RowsAffected >= 1
 }
 
 func (r *inv_repository) RetrieveTokens() *[]models.InviteToken {
@@ -43,7 +39,7 @@ func (r *inv_repository) RetrieveTokens() *[]models.InviteToken {
 	var tokens []models.InviteToken
 	db := r.db.Model(&tokens)
 
-	results := db.Debug().Select("*").Where("Active = ?", true).Find(&tokens)
+	results := db.Debug().Find(&tokens)
 
 	if results.Error != nil {
 		return &tokens
@@ -63,7 +59,6 @@ func (r *inv_repository) GenerateToken() (string, string) {
 	insert := db.Debug().Create(&tokens)
 	db.Commit()
 
-
 	if insert.Error != nil {
 		return "", insert.Error.Error()
 	}
@@ -77,7 +72,7 @@ func (r *inv_repository) UpdateToken(token string) (bool, string) {
 
 	revoke := db.Debug().Where("token = ?", token).Update("Active", false)
 
-	if revoke.Error != nil{
+	if revoke.Error != nil {
 		return false, revoke.Error.Error()
 	}
 	return true, ""

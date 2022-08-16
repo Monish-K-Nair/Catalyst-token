@@ -1,0 +1,28 @@
+version: "3.9"
+services:
+  db:
+    container_name: catalyst_db
+    image: postgres:13
+    restart: always
+    environment:
+      POSTGRES_USER: catalystuser
+      POSTGRES_PASSWORD: catalystpassword
+      POSTGRES_DB: catalyst
+    ports:
+      - "5432:5432"
+    volumes:
+      - data:/var/lib/postgresql/data
+  server:
+    container_name: catalyst_server
+    build:
+      context: .
+      dockerfile: docker/catalyst_dockerfile
+    env_file: .env
+    depends_on:
+      - db
+    networks:
+      - default
+    ports:
+    - "8080:8080"
+volumes:
+  data:

@@ -9,5 +9,5 @@ import (
 
 func InvalidateToken(db *gorm.DB) {
 	tokens := models.InviteToken{}
-	db.Model(&tokens).Where("Active = ? AND Created_at <= ?", true, time.Now().UTC().AddDate(0, 0, 7)).Update("Active", false)
+	db.Model(&tokens).Where("Active = ? AND Created_at <= ?", true, time.Now().UTC().AddDate(0, 0, -7)).Update("Active", false)
 }

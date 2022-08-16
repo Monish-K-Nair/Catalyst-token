@@ -12,15 +12,15 @@ import (
 )
 
 func SetupConnection() *gorm.DB {
-	// databaseURI := make(chan string, 1)
+	var db_uri string
 
-	// if os.Getenv("GO_ENV") != "production" {
-	// 	databaseURI <- utils.GodotEnv("DEV_URI")
-	// } else {
-	// 	databaseURI <- os.Getenv("PROD_URI")
-	// }
+	if os.Getenv("GO_ENV") != "production" {
+		db_uri = os.Getenv("DEV_URI")
+	} else {
+		db_uri = os.Getenv("PROD_URI")
+	}
 
-	db, err := gorm.Open(postgres.Open("postgres://postgres@localhost:5432/development"), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(db_uri), &gorm.Config{})
 
 	if err != nil {
 		defer logrus.Info("Connection to Database Failed")

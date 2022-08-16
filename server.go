@@ -50,7 +50,7 @@ func main() {
 			token.PUT("", auth.AdminAuth(), tk_handler.RevokeToken)
 			token.PATCH("", auth.AdminAuth(), tk_handler.RevokeToken)
 			token.DELETE("", auth.AdminAuth(), tk_handler.DeleteToken)
-			router.POST("/validate", limit.MaxAllowed(20), tk_handler.ValidateToken)
+			token.POST("/validate", limit.MaxAllowed(20), tk_handler.ValidateToken)
 		}
 		router.POST("/admin/login", admin_handler.RegisterNewToken)
 	}
